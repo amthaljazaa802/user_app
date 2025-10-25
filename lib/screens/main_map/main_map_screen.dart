@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +12,6 @@ import '../../models/bus.dart';
 import '../../models/bus_stop.dart';
 import '../../repositories/transport_repository.dart';
 import 'widgets/bus_stop_popup.dart';
-// <-- استيراد جديد
 
 class MainMapScreen extends StatefulWidget {
   const MainMapScreen({super.key});
@@ -147,8 +145,7 @@ class _MainMapScreenState extends State<MainMapScreen> {
             ),
             children: [
               TileLayer(
-                urlTemplate:
-                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.example.bus_tracking_app',
               ),
               // طبقة تجميع العلامات للحافلات
