@@ -148,8 +148,8 @@ class _MainMapScreenState extends State<MainMapScreen> {
             children: [
               TileLayer(
                 urlTemplate:
-                    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: const ['a', 'b', 'c'],
+                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.example.bus_tracking_app',
               ),
               // طبقة تجميع العلامات للحافلات
               MarkerClusterLayerWidget(
