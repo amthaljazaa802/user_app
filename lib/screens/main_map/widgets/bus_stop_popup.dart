@@ -25,13 +25,15 @@ class BusStopPopup extends StatefulWidget {
 class _BusStopPopupState extends State<BusStopPopup> {
   String? _estimatedTime;
   String? _routeName;
-  String? _expectedAt; // precomputed, instead of TimeOfDay.now() in build
+  int? _expectedMinutes; // Store minutes instead of formatted string
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _calculateArrivalTime();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _calculateArrivalTime();
+    });
   }
 
   @override
@@ -63,13 +65,13 @@ class _BusStopPopupState extends State<BusStopPopup> {
 
       final time = _estimateArrivalTime(distance);
       final routeName = _getLineNameById(nearestBus.lineId);
-      final expectedAt = _expectedTimeString(time);
+      final expectedMinutes = int.tryParse(time) ?? 0;
 
       if (mounted) {
         setState(() {
           _estimatedTime = time;
           _routeName = routeName;
-          _expectedAt = expectedAt;
+          _expectedMinutes = expectedMinutes;
           _isLoading = false;
         });
       }
@@ -78,7 +80,7 @@ class _BusStopPopupState extends State<BusStopPopup> {
         setState(() {
           _estimatedTime = 'لا حافلات قريبة';
           _routeName = 'غير متوفر';
-          _expectedAt = null;
+          _expectedMinutes = null;
           _isLoading = false;
         });
       }
@@ -108,19 +110,21 @@ class _BusStopPopupState extends State<BusStopPopup> {
     return (timeInSeconds / 60).ceil().toString();
   }
 
-  String _expectedTimeString(String etaMinutesStr) {
-    final minutes = int.tryParse(etaMinutesStr) ?? 0;
-    final expected = DateTime.now().add(Duration(minutes: minutes));
-    final tod = TimeOfDay.fromDateTime(expected);
-    return tod.format(context);
-  }
-
   String? _getLineNameById(String lineId) {
     try {
       return widget.allBusLines.firstWhere((line) => line.id == lineId).name;
     } catch (e) {
       return 'خط غير معروف';
     }
+  }
+
+  String _formatExpectedTime(int minutes) {
+    final expected = DateTime.now().add(Duration(minutes: minutes));
+    final hour = expected.hour;
+    final minute = expected.minute;
+    final period = hour >= 12 ? 'م' : 'ص';
+    final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+    return '${displayHour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $period';
   }
 
   @override
@@ -250,7 +254,7 @@ class _BusStopPopupState extends State<BusStopPopup> {
                       ),
                     ],
                   ),
-                  if (_expectedAt != null)
+                  if (_expectedMinutes != null && _expectedMinutes! > 0)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -273,7 +277,7 @@ class _BusStopPopupState extends State<BusStopPopup> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          _expectedAt!,
+                          _formatExpectedTime(_expectedMinutes!),
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
