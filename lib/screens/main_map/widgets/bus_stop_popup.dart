@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import '../../../models/bus.dart';
 import '../../../models/bus_line.dart';
 import '../../../models/bus_stop.dart';
@@ -10,12 +11,14 @@ class BusStopPopup extends StatefulWidget {
   final BusStop stop;
   final List<Bus> allBuses;
   final List<BusLine> allBusLines;
+  final PopupController? popupController;
 
   const BusStopPopup({
     Key? key,
     required this.stop,
     required this.allBuses,
     required this.allBusLines,
+    this.popupController,
   }) : super(key: key);
 
   @override
@@ -190,7 +193,11 @@ class _BusStopPopupState extends State<BusStopPopup> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.close, size: 20),
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () {
+                    if (widget.popupController != null) {
+                      widget.popupController!.hideAllPopups();
+                    }
+                  },
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                 ),

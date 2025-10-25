@@ -204,6 +204,7 @@ class _MainMapScreenState extends State<MainMapScreen> {
                               stop: stop,
                               allBuses: _buses,
                               allBusLines: _repository.busLines,
+                              popupController: _popupLayerController,
                             );
                           }
                         }
